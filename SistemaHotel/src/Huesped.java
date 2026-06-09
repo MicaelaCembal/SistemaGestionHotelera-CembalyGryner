@@ -1,4 +1,5 @@
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Huesped {
     private int idHuesped;
@@ -8,4 +9,17 @@ public class Huesped {
     private int telefono;
     private CategoriaHuesped categoria;
     private LocalDateTime  fechaRegistro;
+
+
+    public void actualizarDatos(String nombre, String apellido, int dni, String email, int telefono, CategoriaHuesped categoria){
+
+    }
+
+    public List<Reserva> verHistorialReserva(){
+        return null;
+    }
+
+    public CategoriaHuesped verCategoria(){
+        return categoria;
+    }
 }

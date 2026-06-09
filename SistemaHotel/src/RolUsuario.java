@@ -1,2 +1,4 @@
-public interface RolUsuario {
+public enum RolUsuario {
+    ADMIN,
+    RECEPCIONISTA
 }

@@ -10,4 +10,31 @@ public class Reserva {
 
     private EstadoReserva estado;
     private double costoTotal;
+    public void confirmarReserva(){
+
+    }
+
+    public void cancelarReserva(){
+
+    }
+
+    public void modificarReserva(){
+
+    }
+
+    public void checkIn(){
+
+    }
+
+    public void checkOut(){
+
+    }
+
+    public double calcularCostoTotal(){
+        return 0;
+    }
+
+    public void agregarServicioExtra(Servicio servicio){
+
+    }
 }

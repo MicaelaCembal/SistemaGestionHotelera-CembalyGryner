@@ -1,2 +1,5 @@
-public interface CategoriaHuesped {
+public enum CategoriaHuesped {
+    REGULAR,
+    FRECUENTE,
+    VIP
 }

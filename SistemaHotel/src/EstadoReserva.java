@@ -1,2 +1,5 @@
-public interface EstadoReserva {
+public enum EstadoReserva {
+    PENDIENTE,
+    PAGADO,
+    REEMBOLSADO
 }
