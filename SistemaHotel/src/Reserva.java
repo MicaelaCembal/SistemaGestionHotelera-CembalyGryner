@@ -34,7 +34,7 @@ public class Reserva {
         return 0;
     }
 
-    public void agregarServicioExtra(Servicio servicio){
+    public void agregarServicioExtra(IServicio servicio){
 
     }
 }
