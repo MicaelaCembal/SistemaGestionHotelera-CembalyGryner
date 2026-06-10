@@ -3,11 +3,13 @@ public class Usuario {
     private String password;
     private RolUsuario rol;
 
-    public void login(){
-
+    public Usuario(String username, String password, RolUsuario rol) {
+        this.username = username;
+        this.password = password;
+        this.rol = rol;
     }
 
-    public String setPermisosAcceso(){
-        return "";
-    }
+    public String getUsername() { return username; }
+    public String getPassword() { return password; }
+    public RolUsuario getRol() { return rol; }
 }
