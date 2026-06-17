@@ -1,3 +1,5 @@
+import baseDatos.ConexionDB;
+
 import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
@@ -5,6 +7,11 @@ import java.util.ArrayList;
 public class Main {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
+
+        //conectar a conexion a base de datos
+        ConexionDB conexionDB = new ConexionDB();
+        conexionDB.crearBaseYTablas();
+
 
         //USUARIOS DE PRUEBA. ESTO IRIA EN UNA BASE DE DATOS.
         List<Usuario> listaUsuarios = new ArrayList<>();
