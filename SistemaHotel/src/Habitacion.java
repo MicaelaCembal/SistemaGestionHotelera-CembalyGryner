@@ -15,5 +15,12 @@ public class Habitacion {
 
     }
 
+    public int getIdHabitacion() {
+        return idHabitacion;
+    }
+
+    public TipoHabitacion getTipoHabitacion() {
+        return getTipoHabitacion();
+    }
 
 }
