@@ -8,18 +8,23 @@ public class Estadia {
     private LocalDateTime fechaIngresoReal;
     private LocalDateTime fechaEgresoReal;
     private List<ServicioEstadia> serviciosEstadia;
+    private int idReserva;
 
     public Estadia() {
         this.serviciosEstadia = new ArrayList<>();
     }
 
-    public Estadia(int idEstadia, Reserva reserva, LocalDateTime fechaIngresoReal,
-                   LocalDateTime fechaEgresoReal, int cantidadInt, double subtotalServicios) {
+    public Estadia(int idEstadia, Reserva reserva, LocalDateTime fechaIngresoReal, LocalDateTime fechaEgresoReal, int cantidadInt, double subtotalServicios) {
+
         this.idEstadia = idEstadia;
         this.reserva = reserva;
         this.fechaIngresoReal = fechaIngresoReal;
         this.fechaEgresoReal = fechaEgresoReal;
         this.serviciosEstadia = new ArrayList<>();
+
+        if (reserva != null) {
+            this.idReserva = reserva.getIdReserva();
+        }
     }
 
 

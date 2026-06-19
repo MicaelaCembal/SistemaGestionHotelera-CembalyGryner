@@ -4,6 +4,9 @@ public class TipoHabitacion {
     private int capacidad;
     private double precioBaseNoche;
 
+    public TipoHabitacion() {
+    }
+    
     public int getIdTipoHabitacion() {
         return idTipoHabitacion;
     }
@@ -13,6 +16,7 @@ public class TipoHabitacion {
     }
 
     public TipoHabitacion(int idTipoHabitacion) {
+
         this.idTipoHabitacion = idTipoHabitacion;
     }
 

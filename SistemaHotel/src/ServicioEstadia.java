@@ -1,6 +1,7 @@
 import java.time.LocalDateTime;
 
 public class ServicioEstadia {
+
     private int idServicioEstadia;
     private int idEstadia;
     private int idServicio;
@@ -9,11 +10,20 @@ public class ServicioEstadia {
     private double subtotal;
     private IServicio servicio;
 
-    public double calcularSubtotal(){
-        return 0;
+
+    public ServicioEstadia(int idServicioEstadia, int idEstadia, IServicio servicio, int cantidad, LocalDateTime fecha) {
+
+        this.idServicioEstadia = idServicioEstadia;
+        this.idEstadia = idEstadia;
+        this.servicio = servicio;
+        this.cantidad = cantidad;
+        this.fecha = fecha;
+        this.subtotal = calcularSubtotal();
     }
 
+
     public ServicioEstadia(int idServicioEstadia, int idEstadia, int idServicio, int cantidad, LocalDateTime fecha, double subtotal, IServicio servicio) {
+
         this.idServicioEstadia = idServicioEstadia;
         this.idEstadia = idEstadia;
         this.idServicio = idServicio;
@@ -22,6 +32,18 @@ public class ServicioEstadia {
         this.subtotal = subtotal;
         this.servicio = servicio;
     }
+
+
+    public double calcularSubtotal() {
+
+        if (servicio == null) {
+            return 0;
+        }
+
+        subtotal = servicio.calcularPrecio() * cantidad;
+        return subtotal;
+    }
+
 
     public int getIdServicioEstadia() {
         return idServicioEstadia;
@@ -78,4 +100,5 @@ public class ServicioEstadia {
     public void setServicio(IServicio servicio) {
         this.servicio = servicio;
     }
+
 }
