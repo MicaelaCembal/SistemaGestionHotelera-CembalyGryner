@@ -34,7 +34,7 @@ public class Reserva {
     }
 
     public void cancelarReserva() {
-        this.estado = EstadoReserva.REEMBOLSADO;
+        this.estado = EstadoReserva.CANCELADA;
     }
 
     public double calcularCostoTotal() {

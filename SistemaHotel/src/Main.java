@@ -1,49 +1,34 @@
 import baseDatos.ConexionDB;
+import interfaz.VentanaLogin;
+import interfaz.VentanaPrincipal;
 
-import java.util.Scanner;
-import java.util.List;
-import java.util.ArrayList;
+import javax.swing.*;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
 
-        //conectar a conexion a base de datos
+    public static void main(String[] args) {
+
         ConexionDB conexionDB = new ConexionDB();
         conexionDB.crearBaseYTablas();
 
+        SwingUtilities.invokeLater(() -> {
 
-        //USUARIOS DE PRUEBA. ESTO IRIA EN UNA BASE DE DATOS.
-        List<Usuario> listaUsuarios = new ArrayList<>();
-        listaUsuarios.add(new Usuario("admin", "1234", RolUsuario.ADMIN));
-        listaUsuarios.add(new Usuario("recepcion1", "hotel2024", RolUsuario.RECEPCIONISTA));
+            JFrame frame = new JFrame("Sistema de Gestión Hotelera");
 
-        System.out.println("=== SISTEMA DE GESTIÓN HOTELERA ===");
+            VentanaLogin login = new VentanaLogin();
 
-        System.out.print("Ingrese su nombre de usuario: ");
-        String userDigitado = sc.nextLine();
-        System.out.print("Ingrese su contraseña: ");
-        String passDigitado = sc.nextLine();
+            frame.setContentPane(login.getPanelInicio());
 
-        Usuario usuarioEncontrado = null;
-        for (Usuario u : listaUsuarios) {
-            if (u.getUsername().equals(userDigitado)) {
-                usuarioEncontrado = u;
-                break;
-            }
-        }
+            frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        if (usuarioEncontrado != null) {
-            if (usuarioEncontrado.login(passDigitado)) {
-                System.out.println("\n-------------------------------------------");
-                System.out.println("Bienvenido/a: " + ControladorSistema.getInstancia().getUsuarioActual().getUsername());
-                System.out.println("Rol: " + ControladorSistema.getInstancia().getUsuarioActual().getRol());
-                System.out.println("-------------------------------------------");
-            }
-        } else {
-            System.out.println("Error: El usuario no existe.");
-        }
+            frame.setSize(800, 600);
 
-        sc.close();
+            frame.setLocationRelativeTo(null);
+
+            frame.setVisible(true);
+
+        });
+
     }
+
 }
