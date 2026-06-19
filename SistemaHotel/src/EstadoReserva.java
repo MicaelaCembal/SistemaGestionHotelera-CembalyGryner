@@ -1,5 +1,7 @@
 public enum EstadoReserva {
+
     PENDIENTE,
-    PAGADO,
-    REEMBOLSADO
+    CONFIRMADA,
+    CANCELADA
+
 }

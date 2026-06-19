@@ -6,7 +6,7 @@ public class TipoHabitacion {
 
     public TipoHabitacion() {
     }
-    
+
     public int getIdTipoHabitacion() {
         return idTipoHabitacion;
     }

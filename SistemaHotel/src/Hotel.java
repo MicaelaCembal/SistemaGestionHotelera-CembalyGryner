@@ -1,4 +1,5 @@
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Hotel {
@@ -8,29 +9,53 @@ public class Hotel {
     private String direccion;
     private String ciudad;
     private String categoria;
+    private List<Habitacion> habitaciones;
+
+
+    public Hotel() {
+        this.habitaciones = new ArrayList<>();
+    }
+
 
     public void agregarHabitacion(Habitacion habitacion) {
-
+        habitaciones.add(habitacion);
     }
+
 
     public void eliminarHabitacion(Habitacion habitacion) {
-
+        habitaciones.remove(habitacion);
     }
+
 
     public List<Habitacion> listarHabitaciones() {
-        return null;
+        return habitaciones;
     }
 
+
     public double calcularOcupacion(LocalDateTime fecha) {
-        return 0;
+
+        if (habitaciones.isEmpty()) {
+            return 0;
+        }
+
+        int ocupadas = 0;
+
+        for (Habitacion habitacion : habitaciones) {
+            if (habitacion.getEstado() instanceof EstadoOcupado) {
+                ocupadas++;
+            }
+        }
+
+        return (double) ocupadas * 100 / habitaciones.size();
     }
+
 
     public int getIdHotel() {
         return idHotel;
     }
 
-    public void setIdHotel(int id) {
-        this.idHotel = id;
+    public void setIdHotel(int idHotel) {
+        this.idHotel = idHotel;
     }
 
     public String getNombre() {
@@ -64,4 +89,13 @@ public class Hotel {
     public void setCategoria(String categoria) {
         this.categoria = categoria;
     }
+
+    public List<Habitacion> getHabitaciones() {
+        return habitaciones;
+    }
+
+    public void setHabitaciones(List<Habitacion> habitaciones) {
+        this.habitaciones = habitaciones;
+    }
+
 }

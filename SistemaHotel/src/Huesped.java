@@ -1,7 +1,9 @@
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Huesped {
+
     private int idHuesped;
     private String nombre;
     private String apellido;
@@ -9,27 +11,17 @@ public class Huesped {
     private String email;
     private int telefono;
     private CategoriaHuesped categoria;
-    private int cantVisitas;
     private LocalDateTime fechaRegistro;
-    private LocalDateTime fechaNacimiento;
+    private List<Reserva> reservas;
 
-    public Huesped() {}
 
-    public Huesped(int idHuesped, String nombre, String apellido, int dni, int telefono,
-                   String email, CategoriaHuesped categoria, int cantVisitas, LocalDateTime fechaNacimiento) {
-        this.idHuesped = idHuesped;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.dni = dni;
-        this.telefono = telefono;
-        this.email = email;
-        this.categoria = categoria;
-        this.cantVisitas = cantVisitas;
-        this.fechaNacimiento = fechaNacimiento;
+    public Huesped() {
+        this.reservas = new ArrayList<>();
     }
 
-    public void actualizarDatos(String nombre, String apellido, int dni, String email,
-                                int telefono, CategoriaHuesped categoria) {
+
+    public void actualizarDatos(String nombre, String apellido, int dni, String email, int telefono, CategoriaHuesped categoria) {
+
         this.nombre = nombre;
         this.apellido = apellido;
         this.dni = dni;
@@ -37,21 +29,24 @@ public class Huesped {
         this.telefono = telefono;
         this.categoria = categoria;
     }
+
 
     public List<Reserva> verHistorialReserva() {
-        return null;
+        return reservas;
     }
+
 
     public CategoriaHuesped verCategoria() {
         return categoria;
     }
 
+
     public int getIdHuesped() {
         return idHuesped;
     }
 
-    public void setIdHuesped(int id) {
-        this.idHuesped = id;
+    public void setIdHuesped(int idHuesped) {
+        this.idHuesped = idHuesped;
     }
 
     public String getNombre() {
@@ -102,21 +97,6 @@ public class Huesped {
         this.categoria = categoria;
     }
 
-    public int getCantVisitas() {
-        return cantVisitas;
-    }
-
-    public void setCantVisitas(int cantVisitas) {
-        this.cantVisitas = cantVisitas;
-    }
-
-    public LocalDateTime getFechaNacimiento() {
-        return fechaNacimiento;
-    }
-
-    public void setFechaNacimiento(LocalDateTime fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
-    }
     public LocalDateTime getFechaRegistro() {
         return fechaRegistro;
     }
@@ -125,9 +105,12 @@ public class Huesped {
         this.fechaRegistro = fechaRegistro;
     }
 
-    @Override
-    public String toString() {
-        return "Huesped{id=" + idHuesped + ", nombre=" + nombre + " " + apellido +
-                ", dni=" + dni + ", categoria=" + categoria + "}";
+    public List<Reserva> getReservas() {
+        return reservas;
     }
+
+    public void setReservas(List<Reserva> reservas) {
+        this.reservas = reservas;
+    }
+
 }
