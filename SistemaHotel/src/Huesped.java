@@ -10,6 +10,7 @@ public class Huesped {
     private int telefono;
     private CategoriaHuesped categoria;
     private int cantVisitas;
+    private LocalDateTime fechaRegistro;
     private LocalDateTime fechaNacimiento;
 
     public Huesped() {}
@@ -115,6 +116,13 @@ public class Huesped {
 
     public void setFechaNacimiento(LocalDateTime fechaNacimiento) {
         this.fechaNacimiento = fechaNacimiento;
+    }
+    public LocalDateTime getFechaRegistro() {
+        return fechaRegistro;
+    }
+
+    public void setFechaRegistro(LocalDateTime fechaRegistro) {
+        this.fechaRegistro = fechaRegistro;
     }
 
     @Override
