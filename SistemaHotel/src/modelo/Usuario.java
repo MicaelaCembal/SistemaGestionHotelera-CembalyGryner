@@ -6,15 +6,8 @@ public class Usuario {
     private String password;
     private RolUsuario rol;
 
-    // Constructor para el DAO
     public Usuario(int idUsuario, String username, String password, RolUsuario rol) {
         this.idUsuario = idUsuario;
-        this.username = username;
-        this.password = password;
-        this.rol = rol;
-    }
-
-    public Usuario(String username, String password, RolUsuario rol) {
         this.username = username;
         this.password = password;
         this.rol = rol;
@@ -25,21 +18,10 @@ public class Usuario {
     }
 
     public boolean tienePermiso(String accion) {
-        // El ADMIN tiene todos los permisos, el RECEPCIONISTA no.
         if (this.rol == RolUsuario.ADMIN) return true;
-        if (this.rol == RolUsuario.RECEPCIONISTA) {
-            switch (accion) {
-                case "CREAR_RESERVA":
-                case "CHECK_IN":
-                case "REGISTRAR_HUESPED":
-                    return true;
-                default:
-                    return false;
-            }
-        }
+        if (this.rol == RolUsuario.RECEPCIONISTA && accion.equals("CREAR_RESERVA")) return true;
         return false;
     }
-
     public int getIdUsuario() { return idUsuario; }
     public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
     public String getUsername() { return username; }

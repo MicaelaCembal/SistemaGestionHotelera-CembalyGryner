@@ -40,8 +40,10 @@ public class ConexionDB {
             Class.forName(DRIVER);
             conexion = DriverManager.getConnection(URL, USUARIO, PASSWORD);
             stmt = conexion.createStatement();
+
             stmt.executeUpdate("CREATE DATABASE IF NOT EXISTS " + DB_NAME);
             stmt.executeUpdate("USE " + DB_NAME);
+
             stmt.executeUpdate("""
                 CREATE TABLE IF NOT EXISTS usuario (
                     idUsuario     INT PRIMARY KEY AUTO_INCREMENT,
@@ -51,7 +53,6 @@ public class ConexionDB {
                 )
             """);
             System.out.println("Tabla 'usuario' verificada.");
-
 
             stmt.executeUpdate("""
                 CREATE TABLE IF NOT EXISTS huesped (
@@ -89,7 +90,6 @@ public class ConexionDB {
                 )
             """);
             System.out.println("Tabla 'tipo_habitacion' verificada.");
-
 
             stmt.executeUpdate("""
                 CREATE TABLE IF NOT EXISTS habitacion (
@@ -181,6 +181,17 @@ public class ConexionDB {
                 )
             """);
             System.out.println("Tabla 'pago' verificada.");
+
+            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM usuario");
+            if (rs.next() && rs.getInt(1) == 0) {
+                // USUARIOS POR DEFECTO
+                stmt.executeUpdate("INSERT INTO usuario (username, password, rol) VALUES ('admin', '1234', 'ADMIN')");
+                stmt.executeUpdate("INSERT INTO usuario (username, password, rol) VALUES ('recep', '4321', 'RECEPCIONISTA')");
+
+                System.out.println("Usuarios por defecto creados:");
+                System.out.println("- admin / 1234 (ADMIN)");
+                System.out.println("- recep / 4321 (RECEPCIONISTA)");
+            }
 
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println("Error al crear la base o tablas: " + e.getMessage());
