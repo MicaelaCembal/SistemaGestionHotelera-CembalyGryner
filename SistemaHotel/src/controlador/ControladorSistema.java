@@ -67,7 +67,7 @@ public class ControladorSistema {
         r.setFechaCheckin(checkIn.atStartOfDay());
         r.setFechaCheckout(checkOut.atStartOfDay());
         r.setEstado(EstadoReserva.PENDIENTE);
-        r.setCostoTotal(5000.0); // todo: Esto es un valor de prueba. Ver manejo de costos dependiendo del tipo de habitacion
+        r.setCostoTotal(r.calcularCostoTotal());
 
         if (reservaDAO.insertar(r)) {
             avisar("Reserva creada para el DNI " + dniHuesped + " en hab. " + numHab);
@@ -92,23 +92,16 @@ public class ControladorSistema {
         return "Error.";
     }
 
+
     public String procesarCheckOut(int dni) {
 
-        Reserva r = reservaDAO.buscarReservaPendientePorDni(dni);
+        Reserva reserva = reservaDAO.buscarReservaPorDni(dni);
 
-        if (r == null) {
-            return "No existe una estadía activa.";
+        if (reserva == null) {
+            return "No se encontró reserva.";
         }
 
-        habitacionDAO.actualizarEstado(
-                r.getHabitacion().getIdHabitacion(),
-                "LIMPIEZA"
-        );
-
-        reservaDAO.actualizarEstado(
-                r.getIdReserva(),
-                "CONFIRMADA"
-        );
+        habitacionDAO.actualizarEstado(reserva.getHabitacion().getIdHabitacion(), "LIMPIEZA");
 
         avisar("CHECK-OUT REALIZADO: huésped DNI " + dni);
 

@@ -44,6 +44,11 @@ public class HabitacionDAO {
                 h.setIdHabitacion(rs.getInt("idHabitacion"));
                 h.setNumero(rs.getInt("numero"));
                 h.setPiso(rs.getInt("piso"));
+
+                TipoHabitacion tipo = new TipoHabitacion();
+                tipo.setPrecioBaseNoche(5000);
+                h.setTipoHabitacion(tipo);
+
                 return h;
             }
         } catch (SQLException e) { e.printStackTrace(); }
