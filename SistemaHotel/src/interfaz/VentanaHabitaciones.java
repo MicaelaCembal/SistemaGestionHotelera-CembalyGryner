@@ -17,7 +17,7 @@ public class VentanaHabitaciones {
     }
 
     private void cargarHabitaciones() {
-        List<Habitacion> disponibles = ControladorSistema.getInstancia().obtenerHabitacionesDisponibles();
+        List<Habitacion> disponibles = ControladorSistema.getInstancia().obtenerTodasLasHabitaciones();
 
         DefaultListModel<String> modelo = new DefaultListModel<>();
 

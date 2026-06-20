@@ -77,13 +77,14 @@ public class MainConsola {
                         System.out.println("\n>>> " + resultado);
 
                     } else if (opcion == 2) {
-                        System.out.println("\n-- HABITACIONES DISPONIBLES --");
-                        List<Habitacion> disponibles = sistema.obtenerHabitacionesDisponibles();
-                        if (disponibles.isEmpty()) {
-                            System.out.println("No hay habitaciones libres en este momento.");
+                        System.out.println("\n-- ESTADO ACTUAL DE TODAS LAS HABITACIONES --");
+                        List<Habitacion> todas = sistema.obtenerTodasLasHabitaciones();
+                        if (todas.isEmpty()) {
+                            System.out.println("No hay habitaciones registradas.");
                         } else {
-                            for (Habitacion h : disponibles) {
-                                System.out.println("Habitación N°: " + h.getNumero() + " | Piso: " + h.getPiso());
+                            for (Habitacion h : todas) {
+                                String nombreEstado = h.getEstado().getClass().getSimpleName().replace("Estado", "");
+                                System.out.println("Hab N°: " + h.getNumero() + " | Piso: " + h.getPiso() + " | ESTADO: [" + nombreEstado.toUpperCase() + "]");
                             }
                         }
 

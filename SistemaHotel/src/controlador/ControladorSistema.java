@@ -25,9 +25,7 @@ public class ControladorSistema {
         return instancia;
     }
 
-    public void registrarObserver(IObserver o) {
-        observadores.add(o);
-    }
+    public void registrarObserver(IObserver o) { observadores.add(o); }
 
     private void avisar(String msg) {
         for (IObserver o : observadores) o.notificar(msg);
@@ -52,22 +50,24 @@ public class ControladorSistema {
             avisar("Huésped registrado: " + n + " " + a);
             return "Éxito.";
         }
-        return "Error al registrar huésped.";
+        return "Error.";
     }
 
-    public List<Habitacion> obtenerHabitacionesDisponibles() {
-        return habitacionDAO.listarDisponibles();
+    public List<Habitacion> obtenerTodasLasHabitaciones() {
+        return habitacionDAO.listarTodas();
     }
 
     public String realizarReserva(int dniHuesped, int numHab, LocalDate checkIn, LocalDate checkOut) {
-        if (!checkOut.isAfter(checkIn)) {
-            avisar("ERROR: Fecha de salida (" + checkOut + ") no puede ser anterior o igual a la entrada.");
-            return "Error: Fechas inválidas.";
+        if (checkIn.isBefore(LocalDate.now())) {
+            avisar("ERROR: Fecha de entrada inválida.");
+            return "Error.";
         }
-
+        if (!checkOut.isAfter(checkIn)) {
+            avisar("ERROR: Rango de fechas inválido.");
+            return "Error.";
+        }
         Huesped hue = huespedDAO.buscarPorDni(dniHuesped);
         if (hue == null) return "Huésped no encontrado.";
-
         Habitacion hab = habitacionDAO.buscarPorNumero(numHab);
         if (hab == null) return "Habitación no encontrada.";
 
@@ -75,8 +75,8 @@ public class ControladorSistema {
         LocalDateTime fin = checkOut.atStartOfDay();
 
         if (reservaDAO.existeSolapamiento(hab.getIdHabitacion(), inicio, fin)) {
-            avisar("ALERTA DE OVERBOOKING: La habitación " + numHab + " ya está reservada en esas fechas.");
-            return "Error: Habitación ocupada en ese periodo.";
+            avisar("ALERTA DE OVERBOOKING: Hab " + numHab + " ocupada.");
+            return "Error: Habitación ocupada.";
         }
 
         Reserva r = new Reserva();
@@ -91,33 +91,39 @@ public class ControladorSistema {
             avisar("RESERVA CONFIRMADA: Hab " + numHab + " para " + hue.getApellido());
             return "Reserva Exitosa.";
         }
-        return "Error al guardar reserva.";
+        return "Error.";
     }
 
     public String procesarCheckIn(int dni) {
         Reserva r = reservaDAO.buscarReservaPendientePorDni(dni);
-        if (r == null) return "No se encontró una reserva pendiente para el DNI: " + dni;
+        if (r == null) return "No hay reserva PENDIENTE.";
+
+        if (!(r.getHabitacion().getEstado() instanceof EstadoDisponible)) {
+            avisar("BLOQUEO: Hab " + r.getHabitacion().getNumero() + " en estado " + r.getHabitacion().getEstado().getClass().getSimpleName());
+            return "Error: Habitación no disponible.";
+        }
 
         habitacionDAO.actualizarEstado(r.getHabitacion().getIdHabitacion(), "OCUPADO");
+        reservaDAO.actualizarEstado(r.getIdReserva(), "CONFIRMADA");
 
         Estadia e = new Estadia();
         e.setIdReserva(r.getIdReserva());
         e.setFechaIngresoReal(LocalDateTime.now());
-
         if (estadiaDAO.insertar(e)) {
-            avisar("CHECK-IN: El huésped DNI " + dni + " ha ingresado.");
-            return "Check-in completado con éxito.";
+            avisar("CHECK-IN: DNI " + dni + " ingresó.");
+            return "Check-in completado.";
         }
-        return "Error al registrar la estadía.";
+        return "Error.";
     }
 
     public String procesarCheckOut(int dni) {
-        Reserva r = reservaDAO.buscarReservaPorDni(dni);
-        if (r == null) return "No se encontró una reserva activa para el DNI: " + dni;
+        Reserva r = reservaDAO.buscarReservaConfirmadaPorDni(dni);
+        if (r == null) return "No hay estadía activa para este DNI.";
 
         habitacionDAO.actualizarEstado(r.getHabitacion().getIdHabitacion(), "LIMPIEZA");
+        reservaDAO.actualizarEstado(r.getIdReserva(), "CANCELADA");
 
-        avisar("CHECK-OUT: El huésped DNI " + dni + " ha salido. Habitación " + r.getHabitacion().getNumero() + " enviada a limpieza.");
-        return "Check-out completado con éxito.";
+        avisar("CHECK-OUT: DNI " + dni + " salió. Habitación enviada a limpieza.");
+        return "Check-out completado.";
     }
 }

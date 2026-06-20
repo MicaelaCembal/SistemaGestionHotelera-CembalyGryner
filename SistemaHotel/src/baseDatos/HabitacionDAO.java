@@ -18,6 +18,31 @@ public class HabitacionDAO {
         } catch (SQLException e) { e.printStackTrace(); }
     }
 
+    public List<Habitacion> listarTodas() {
+        List<Habitacion> lista = new ArrayList<>();
+        String sql = "SELECT * FROM habitacion";
+        try (Connection conn = conexionDB.conectar();
+             Statement st = conn.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
+            while (rs.next()) {
+                Habitacion h = new Habitacion();
+                h.setIdHabitacion(rs.getInt("idHabitacion"));
+                h.setNumero(rs.getInt("numero"));
+                h.setPiso(rs.getInt("piso"));
+
+                String estadoBD = rs.getString("estado");
+                switch (estadoBD) {
+                    case "OCUPADO" -> h.setEstado(new EstadoOcupado());
+                    case "LIMPIEZA" -> h.setEstado(new EstadoLimpieza());
+                    case "MANTENIMIENTO" -> h.setEstado(new EstadoMantenimiento());
+                    default -> h.setEstado(new EstadoDisponible());
+                }
+                lista.add(h);
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return lista;
+    }
+
     public List<Habitacion> listarDisponibles() {
         List<Habitacion> lista = new ArrayList<>();
         String sql = "SELECT * FROM habitacion WHERE estado = 'DISPONIBLE'";
@@ -33,6 +58,7 @@ public class HabitacionDAO {
         } catch (SQLException e) { e.printStackTrace(); }
         return lista;
     }
+
     public Habitacion buscarPorNumero(int numero) {
         String sql = "SELECT * FROM habitacion WHERE numero = ?";
         try (Connection conn = conexionDB.conectar();
@@ -43,12 +69,9 @@ public class HabitacionDAO {
                 Habitacion h = new Habitacion();
                 h.setIdHabitacion(rs.getInt("idHabitacion"));
                 h.setNumero(rs.getInt("numero"));
-                h.setPiso(rs.getInt("piso"));
-
                 TipoHabitacion tipo = new TipoHabitacion();
                 tipo.setPrecioBaseNoche(5000);
                 h.setTipoHabitacion(tipo);
-
                 return h;
             }
         } catch (SQLException e) { e.printStackTrace(); }

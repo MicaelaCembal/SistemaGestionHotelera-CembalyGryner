@@ -19,7 +19,6 @@ public class ReservaDAO {
             ps.setTimestamp(5, Timestamp.valueOf(reserva.getFechaCheckout()));
             ps.setDouble(6, reserva.getCostoTotal());
             ps.setString(7, reserva.getEstado().toString());
-
             int filas = ps.executeUpdate();
             if (filas > 0) {
                 ResultSet rs = ps.getGeneratedKeys();
@@ -30,29 +29,32 @@ public class ReservaDAO {
         return false;
     }
 
-    public boolean existeSolapamiento(int idHabitacion, LocalDateTime inicio, LocalDateTime fin) {
-        String sql = "SELECT COUNT(*) FROM reserva " +
-                "WHERE idHabitacion = ? " +
-                "AND estado != 'CANCELADA' " +
-                "AND (fechaCheckin < ? AND fechaCheckout > ?)";
+    public void actualizarEstado(int idReserva, String estado) {
+        String sql = "UPDATE reserva SET estado = ? WHERE idReserva = ?";
+        try (Connection conn = conexionDB.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, estado);
+            ps.setInt(2, idReserva);
+            ps.executeUpdate();
+        } catch (SQLException e) { e.printStackTrace(); }
+    }
 
+    public boolean existeSolapamiento(int idHabitacion, LocalDateTime inicio, LocalDateTime fin) {
+        String sql = "SELECT COUNT(*) FROM reserva WHERE idHabitacion = ? AND estado != 'CANCELADA' " +
+                "AND (fechaCheckin < ? AND fechaCheckout > ?)";
         try (Connection conn = conexionDB.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idHabitacion);
             ps.setTimestamp(2, Timestamp.valueOf(fin));
             ps.setTimestamp(3, Timestamp.valueOf(inicio));
-
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) {
-                return rs.getInt(1) > 0;
-            }
-        } catch (SQLException e) {
-            System.err.println("Error al validar solapamiento: " + e.getMessage());
-        }
+            if (rs.next()) return rs.getInt(1) > 0;
+        } catch (SQLException e) { e.printStackTrace(); }
         return false;
     }
+
     public Reserva buscarReservaPendientePorDni(int dni) {
-        String sql = "SELECT r.*, h.numero, h.piso, hu.nombre, hu.apellido FROM reserva r " +
+        String sql = "SELECT r.*, h.numero, h.estado as estadoHab FROM reserva r " +
                 "JOIN huesped hu ON r.idHuesped = hu.idHuesped JOIN habitacion h ON r.idHabitacion = h.idHabitacion " +
                 "WHERE hu.dni = ? AND r.estado = 'PENDIENTE' ORDER BY r.fechaCheckin ASC LIMIT 1";
         try (Connection conn = conexionDB.conectar();
@@ -65,6 +67,10 @@ public class ReservaDAO {
                 Habitacion hab = new Habitacion();
                 hab.setIdHabitacion(rs.getInt("idHabitacion"));
                 hab.setNumero(rs.getInt("numero"));
+                String est = rs.getString("estadoHab");
+                if(est.equals("DISPONIBLE")) hab.setEstado(new EstadoDisponible());
+                else if(est.equals("OCUPADO")) hab.setEstado(new EstadoOcupado());
+                else if(est.equals("LIMPIEZA")) hab.setEstado(new EstadoLimpieza());
                 r.setHabitacion(hab);
                 return r;
             }
@@ -72,10 +78,10 @@ public class ReservaDAO {
         return null;
     }
 
-    public Reserva buscarReservaPorDni(int dni) {
+    public Reserva buscarReservaConfirmadaPorDni(int dni) {
         String sql = "SELECT r.*, h.idHabitacion, h.numero FROM reserva r " +
                 "JOIN huesped hu ON r.idHuesped = hu.idHuesped JOIN habitacion h ON r.idHabitacion = h.idHabitacion " +
-                "WHERE hu.dni = ? ORDER BY r.idReserva DESC LIMIT 1";
+                "WHERE hu.dni = ? AND r.estado = 'CONFIRMADA' ORDER BY r.idReserva DESC LIMIT 1";
         try (Connection conn = conexionDB.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, dni);
@@ -92,5 +98,4 @@ public class ReservaDAO {
         } catch (SQLException e) { e.printStackTrace(); }
         return null;
     }
-
 }
