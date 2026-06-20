@@ -17,7 +17,7 @@
         <properties>
           <background color="-1165361"/>
           <foreground color="-7275009"/>
-          <text value="Crear modelo.Reserva "/>
+          <text value="Crear Reserva "/>
         </properties>
       </component>
       <component id="1839d" class="javax.swing.JButton" binding="btnPago">
@@ -27,7 +27,7 @@
         <properties>
           <background color="-1165361"/>
           <foreground color="-7275009"/>
-          <text value="Registrar modelo.Pago"/>
+          <text value="Registrar Pago"/>
         </properties>
       </component>
       <component id="cf418" class="javax.swing.JButton" binding="btnHuesped">
@@ -37,7 +37,7 @@
         <properties>
           <background color="-1165361"/>
           <foreground color="-7275009"/>
-          <text value="Registrar modelo.Huesped "/>
+          <text value="Registrar Huesped "/>
         </properties>
       </component>
       <component id="8d3d5" class="javax.swing.JButton" binding="btnHabitaciones">
@@ -57,7 +57,7 @@
         <properties>
           <background color="-1165361"/>
           <foreground color="-16313296"/>
-          <text value="SISTEMA DE GESTIÓN HOTELERAA"/>
+          <text value="SISTEMA DE GESTIÓN HOTELERA"/>
         </properties>
       </component>
     </children>
