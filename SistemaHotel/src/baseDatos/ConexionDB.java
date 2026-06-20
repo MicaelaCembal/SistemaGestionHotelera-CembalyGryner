@@ -64,7 +64,7 @@ public class ConexionDB {
                     email            VARCHAR(150),
                     categoria        ENUM('REGULAR', 'FRECUENTE', 'VIP') NOT NULL DEFAULT 'REGULAR',
                     cantVisitas      INT DEFAULT 0,
-                    fechaNacimiento  DATETIME
+                    fechaNacimiento  DATE
                 )
             """);
             System.out.println("Tabla 'huesped' verificada.");
@@ -182,16 +182,39 @@ public class ConexionDB {
             """);
             System.out.println("Tabla 'pago' verificada.");
 
-            ResultSet rs = stmt.executeQuery("SELECT COUNT(*) FROM usuario");
-            if (rs.next() && rs.getInt(1) == 0) {
-                // USUARIOS POR DEFECTO
-                stmt.executeUpdate("INSERT INTO usuario (username, password, rol) VALUES ('admin', '1234', 'ADMIN')");
-                stmt.executeUpdate("INSERT INTO usuario (username, password, rol) VALUES ('recep', '4321', 'RECEPCIONISTA')");
-
-                System.out.println("Usuarios por defecto creados:");
-                System.out.println("- admin / 1234 (ADMIN)");
-                System.out.println("- recep / 4321 (RECEPCIONISTA)");
+            // USUARIOS POR DEFECTO
+            ResultSet rsUser = stmt.executeQuery("SELECT COUNT(*) FROM usuario");
+            if (rsUser.next() && rsUser.getInt(1) == 0) {
+                stmt.executeUpdate("INSERT INTO usuario (username, password, rol) VALUES ('admin', '1234', 'ADMIN'), ('recep', '4321', 'RECEPCIONISTA')");
             }
+
+            // HOTEL POR DEFECTO
+            ResultSet rsHotel = stmt.executeQuery("SELECT COUNT(*) FROM hotel");
+            if (rsHotel.next() && rsHotel.getInt(1) == 0) {
+                stmt.executeUpdate("INSERT INTO hotel (nombre, direccion, ciudad, categoria) VALUES ('Grand Hotel Central', 'Av. Siempre Viva 123', 'Buenos Aires', 5)");
+            }
+
+            // TIPOS DE HABITACIÓN POR DEFECTO
+            ResultSet rsTipo = stmt.executeQuery("SELECT COUNT(*) FROM tipo_habitacion");
+            if (rsTipo.next() && rsTipo.getInt(1) == 0) {
+                stmt.executeUpdate("INSERT INTO tipo_habitacion (nombre, capacidad, precioBajoNoche, precioAltoNoche) VALUES " +
+                        "('Simple', 1, 5000, 7000), " +
+                        "('Doble', 2, 8500, 11000), " +
+                        "('Suite', 4, 15000, 22000)");
+            }
+
+            // HABITACIONES POR DEFECTO
+            ResultSet rsHab = stmt.executeQuery("SELECT COUNT(*) FROM habitacion");
+            if (rsHab.next() && rsHab.getInt(1) == 0) {
+                stmt.executeUpdate("INSERT INTO habitacion (idHotel, numero, piso, idTipoHabitacion, estado) VALUES " +
+                        "(1, 101, 1, 1, 'DISPONIBLE'), " +
+                        "(1, 102, 1, 1, 'DISPONIBLE'), " +
+                        "(1, 201, 2, 2, 'DISPONIBLE'), " +
+                        "(1, 202, 2, 2, 'DISPONIBLE'), " +
+                        "(1, 301, 3, 3, 'DISPONIBLE')");
+            }
+
+            System.out.println("Datos iniciales cargados con éxito.");
 
         } catch (ClassNotFoundException | SQLException e) {
             System.err.println("Error al crear la base o tablas: " + e.getMessage());

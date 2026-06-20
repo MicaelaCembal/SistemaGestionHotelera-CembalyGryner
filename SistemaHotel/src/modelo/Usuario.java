@@ -19,9 +19,15 @@ public class Usuario {
 
     public boolean tienePermiso(String accion) {
         if (this.rol == RolUsuario.ADMIN) return true;
-        if (this.rol == RolUsuario.RECEPCIONISTA && accion.equals("CREAR_RESERVA")) return true;
+
+        if (this.rol == RolUsuario.RECEPCIONISTA) {
+            return accion.equals("CREAR_RESERVA") ||
+                    accion.equals("REGISTRAR_HUESPED") ||
+                    accion.equals("CHECK_IN");
+        }
         return false;
     }
+
     public int getIdUsuario() { return idUsuario; }
     public void setIdUsuario(int idUsuario) { this.idUsuario = idUsuario; }
     public String getUsername() { return username; }
