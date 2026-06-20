@@ -40,7 +40,7 @@ public class VentanaLogin {
 
                 JOptionPane.showMessageDialog(
                         null,
-                        "Usuario o contraseña incorrectos"
+                        "modelo.Usuario o contraseña incorrectos"
                 );
 
             }

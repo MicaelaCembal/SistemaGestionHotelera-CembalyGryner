@@ -1,6 +1,5 @@
 import baseDatos.ConexionDB;
 import interfaz.VentanaLogin;
-import interfaz.VentanaPrincipal;
 
 import javax.swing.*;
 
