@@ -12,11 +12,11 @@ public class ControladorSistema {
     private Usuario usuarioActual;
     private List<IObserver> observadores = new ArrayList<>();
 
-    private UsuarioDAO usuarioDAO = new UsuarioDAO();
     private HuespedDAO huespedDAO = new HuespedDAO();
     private HabitacionDAO habitacionDAO = new HabitacionDAO();
     private ReservaDAO reservaDAO = new ReservaDAO();
     private EstadiaDAO estadiaDAO = new EstadiaDAO();
+    private UsuarioDAO usuarioDAO = new UsuarioDAO();
 
     private ControladorSistema() {}
 
@@ -52,7 +52,7 @@ public class ControladorSistema {
             avisar("Huésped registrado: " + n + " " + a);
             return "Éxito.";
         }
-        return "Error.";
+        return "Error al registrar huésped.";
     }
 
     public List<Habitacion> obtenerHabitacionesDisponibles() {
@@ -61,8 +61,7 @@ public class ControladorSistema {
 
     public String realizarReserva(int dniHuesped, int numHab, LocalDate checkIn, LocalDate checkOut) {
         if (!checkOut.isAfter(checkIn)) {
-            String errorFecha = "ERROR LÓGICO: La fecha de salida (" + checkOut + ") no puede ser anterior o igual a la de entrada (" + checkIn + ")";
-            avisar(errorFecha);
+            avisar("ERROR: Fecha de salida (" + checkOut + ") no puede ser anterior o igual a la entrada.");
             return "Error: Fechas inválidas.";
         }
 
@@ -76,9 +75,8 @@ public class ControladorSistema {
         LocalDateTime fin = checkOut.atStartOfDay();
 
         if (reservaDAO.existeSolapamiento(hab.getIdHabitacion(), inicio, fin)) {
-            String conflicto = "CONFLICTO: La habitación " + numHab + " ya está ocupada entre " + checkIn + " y " + checkOut;
-            avisar(conflicto);
-            return "Error: Habitación no disponible en esas fechas.";
+            avisar("ALERTA DE OVERBOOKING: La habitación " + numHab + " ya está reservada en esas fechas.");
+            return "Error: Habitación ocupada en ese periodo.";
         }
 
         Reserva r = new Reserva();
@@ -87,7 +85,7 @@ public class ControladorSistema {
         r.setFechaCheckin(inicio);
         r.setFechaCheckout(fin);
         r.setEstado(EstadoReserva.PENDIENTE);
-        r.setCostoTotal(r.calcularCostoTotal());
+        r.calcularCostoTotal();
 
         if (reservaDAO.insertar(r)) {
             avisar("RESERVA CONFIRMADA: Hab " + numHab + " para " + hue.getApellido());
@@ -98,23 +96,28 @@ public class ControladorSistema {
 
     public String procesarCheckIn(int dni) {
         Reserva r = reservaDAO.buscarReservaPendientePorDni(dni);
-        if (r == null) return "No hay reserva pendiente.";
+        if (r == null) return "No se encontró una reserva pendiente para el DNI: " + dni;
+
         habitacionDAO.actualizarEstado(r.getHabitacion().getIdHabitacion(), "OCUPADO");
+
         Estadia e = new Estadia();
         e.setIdReserva(r.getIdReserva());
         e.setFechaIngresoReal(LocalDateTime.now());
+
         if (estadiaDAO.insertar(e)) {
-            avisar("CHECK-IN: DNI " + dni + " ingresó al hotel.");
-            return "Check-in completado.";
+            avisar("CHECK-IN: El huésped DNI " + dni + " ha ingresado.");
+            return "Check-in completado con éxito.";
         }
-        return "Error.";
+        return "Error al registrar la estadía.";
     }
 
     public String procesarCheckOut(int dni) {
-        Reserva reserva = reservaDAO.buscarReservaPorDni(dni);
-        if (reserva == null) return "No se encontró reserva.";
-        habitacionDAO.actualizarEstado(reserva.getHabitacion().getIdHabitacion(), "LIMPIEZA");
-        avisar("CHECK-OUT: DNI " + dni + " salió. Habitación enviada a limpieza.");
-        return "Check-out completado.";
+        Reserva r = reservaDAO.buscarReservaPorDni(dni);
+        if (r == null) return "No se encontró una reserva activa para el DNI: " + dni;
+
+        habitacionDAO.actualizarEstado(r.getHabitacion().getIdHabitacion(), "LIMPIEZA");
+
+        avisar("CHECK-OUT: El huésped DNI " + dni + " ha salido. Habitación " + r.getHabitacion().getNumero() + " enviada a limpieza.");
+        return "Check-out completado con éxito.";
     }
 }

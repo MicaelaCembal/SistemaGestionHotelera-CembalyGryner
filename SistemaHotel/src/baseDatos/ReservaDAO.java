@@ -19,6 +19,7 @@ public class ReservaDAO {
             ps.setTimestamp(5, Timestamp.valueOf(reserva.getFechaCheckout()));
             ps.setDouble(6, reserva.getCostoTotal());
             ps.setString(7, reserva.getEstado().toString());
+
             int filas = ps.executeUpdate();
             if (filas > 0) {
                 ResultSet rs = ps.getGeneratedKeys();
@@ -30,8 +31,9 @@ public class ReservaDAO {
     }
 
     public boolean existeSolapamiento(int idHabitacion, LocalDateTime inicio, LocalDateTime fin) {
-        // Lógica de solapamiento: (InicioPedido < FinExistente) Y (FinPedido > InicioExistente)
-        String sql = "SELECT COUNT(*) FROM reserva WHERE idHabitacion = ? AND estado != 'CANCELADA' " +
+        String sql = "SELECT COUNT(*) FROM reserva " +
+                "WHERE idHabitacion = ? " +
+                "AND estado != 'CANCELADA' " +
                 "AND (fechaCheckin < ? AND fechaCheckout > ?)";
 
         try (Connection conn = conexionDB.conectar();
@@ -41,11 +43,14 @@ public class ReservaDAO {
             ps.setTimestamp(3, Timestamp.valueOf(inicio));
 
             ResultSet rs = ps.executeQuery();
-            if (rs.next()) return rs.getInt(1) > 0;
-        } catch (SQLException e) { e.printStackTrace(); }
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            System.err.println("Error al validar solapamiento: " + e.getMessage());
+        }
         return false;
     }
-
     public Reserva buscarReservaPendientePorDni(int dni) {
         String sql = "SELECT r.*, h.numero, h.piso, hu.nombre, hu.apellido FROM reserva r " +
                 "JOIN huesped hu ON r.idHuesped = hu.idHuesped JOIN habitacion h ON r.idHabitacion = h.idHabitacion " +
@@ -87,4 +92,5 @@ public class ReservaDAO {
         } catch (SQLException e) { e.printStackTrace(); }
         return null;
     }
+
 }
