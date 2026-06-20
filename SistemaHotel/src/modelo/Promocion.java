@@ -11,13 +11,14 @@ public class Promocion {
     private TipoPromocion tipo;
 
     public boolean esAplicable(LocalDateTime fecha) {
-        // Implementación
-        return false;
+
+        return fecha.isAfter(fechaInicio)
+                && fecha.isBefore(fechaFin);
     }
 
     public double calcularDescuento(double monto) {
-        // Implementación
-        return 0.0;
+
+        return monto * porcentajeDescuento / 100;
     }
     public int getIdPromocion() {
         return idPromocion;

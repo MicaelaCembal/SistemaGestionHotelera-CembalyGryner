@@ -80,6 +80,6 @@ import java.time.LocalDateTime;
         public void setEstado(EstadoPago estado) {
             this.estado = estado;
         }
-    
+
 
 }
