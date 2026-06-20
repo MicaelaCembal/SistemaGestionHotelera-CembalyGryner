@@ -97,18 +97,18 @@ public class MainConsola {
                         System.out.print("Número de Habitación: ");
                         int numHab = Integer.parseInt(scanner.nextLine());
 
+                        System.out.println("Fecha de Entrada (Hoy: " + LocalDate.now() + ")");
                         LocalDate checkIn = LocalDate.now();
-                        System.out.println("Fecha de Entrada: " + checkIn + " (Hoy)");
-                        System.out.println("Fecha de Salida:"); // todo: Ver manejo de fechas invalidas. Por ejemplo, que el checkout sea antes del checkin.
-                        System.out.print("Año (ej: 2024): ");
-                        int anioNacimiento = Integer.parseInt(scanner.nextLine());
-                        System.out.print("Mes (1-12): ");
-                        int mesNacimiento = Integer.parseInt(scanner.nextLine());
-                        System.out.print("Día (1-31): ");
-                        int diaNacimiento = Integer.parseInt(scanner.nextLine());
 
-                        LocalDate checkOut = LocalDate.of(anioNacimiento, mesNacimiento, diaNacimiento);
+                        System.out.println("Fecha de Salida:");
+                        System.out.print("Año: ");
+                        int anioS = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Mes: ");
+                        int mesS = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Día: ");
+                        int diaS = Integer.parseInt(scanner.nextLine());
 
+                        LocalDate checkOut = LocalDate.of(anioS, mesS, diaS);
                         String res = sistema.realizarReserva(dni, numHab, checkIn, checkOut);
                         System.out.println("\n>>> " + res);
 
