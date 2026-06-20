@@ -20,7 +20,6 @@ public class HuespedDAO {
             ps.setString(6, huesped.getCategoria().toString());
             ps.setInt(7, 0);
 
-            // Convertimos LocalDate de Java a Date de SQL (solo fecha)
             if (huesped.getFechaNacimiento() != null) {
                 ps.setDate(8, Date.valueOf(huesped.getFechaNacimiento()));
             } else {
@@ -48,5 +47,23 @@ public class HuespedDAO {
             if (rs.next()) return rs.getInt(1) > 0;
         } catch (SQLException e) { e.printStackTrace(); }
         return false;
+    }
+
+    public Huesped buscarPorDni(int dni) {
+        String sql = "SELECT * FROM huesped WHERE dni = ?";
+        try (Connection conn = conexionDB.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, dni);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Huesped h = new Huesped();
+                h.setIdHuesped(rs.getInt("idHuesped"));
+                h.setNombre(rs.getString("nombre"));
+                h.setApellido(rs.getString("apellido"));
+                h.setDni(rs.getInt("dni"));
+                return h;
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return null;
     }
 }

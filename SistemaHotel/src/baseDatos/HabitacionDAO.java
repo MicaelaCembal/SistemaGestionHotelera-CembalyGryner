@@ -28,10 +28,25 @@ public class HabitacionDAO {
                 Habitacion h = new Habitacion();
                 h.setIdHabitacion(rs.getInt("idHabitacion"));
                 h.setNumero(rs.getInt("numero"));
-                // Aquí podrías cargar el modelo.TipoHabitacion con otro DAO si fuera necesario
                 lista.add(h);
             }
         } catch (SQLException e) { e.printStackTrace(); }
         return lista;
+    }
+    public Habitacion buscarPorNumero(int numero) {
+        String sql = "SELECT * FROM habitacion WHERE numero = ?";
+        try (Connection conn = conexionDB.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, numero);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                Habitacion h = new Habitacion();
+                h.setIdHabitacion(rs.getInt("idHabitacion"));
+                h.setNumero(rs.getInt("numero"));
+                h.setPiso(rs.getInt("piso"));
+                return h;
+            }
+        } catch (SQLException e) { e.printStackTrace(); }
+        return null;
     }
 }

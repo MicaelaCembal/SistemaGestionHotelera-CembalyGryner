@@ -3,13 +3,14 @@ package controlador;
 import baseDatos.*;
 import modelo.*;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ControladorSistema {
     private static ControladorSistema instancia;
-
     private Usuario usuarioActual;
+
+    private List<IObserver> observadores = new ArrayList<>();
 
     private UsuarioDAO usuarioDAO = new UsuarioDAO();
     private HuespedDAO huespedDAO = new HuespedDAO();
@@ -20,11 +21,12 @@ public class ControladorSistema {
     private ControladorSistema() {}
 
     public static synchronized ControladorSistema getInstancia() {
-        if (instancia == null) {
-            instancia = new ControladorSistema();
-        }
+        if (instancia == null) instancia = new ControladorSistema();
         return instancia;
     }
+
+    public void registrarObserver(IObserver o) { observadores.add(o); }
+    private void avisar(String msg) { for(IObserver o : observadores) o.notificar(msg); }
 
     public boolean login(String u, String p) {
         Usuario user = usuarioDAO.autenticar(u, p);
@@ -35,75 +37,58 @@ public class ControladorSistema {
         return false;
     }
 
-    public void logout() {
-        this.usuarioActual = null;
-    }
+    public Usuario getUsuarioActual() { return usuarioActual; }
 
-    public Usuario getUsuarioActual() {
-        return usuarioActual;
-    }
-
-    public String registrarHuesped(String nombre, String apellido, int dni, int tel, String email, LocalDate fechaNac) {
-        if (usuarioActual == null) return "Error: Debe iniciar sesión.";
-
-        // El permiso se verifica en el modelo Usuario
-        if (!usuarioActual.tienePermiso("REGISTRAR_HUESPED")) {
-            return "Error: No tiene permisos suficientes.";
-        }
-
-        if (huespedDAO.existeDni(dni)) {
-            return "Error: El DNI " + dni + " ya se encuentra registrado.";
-        }
-
+    public String registrarHuesped(String n, String a, int d, int t, String e, LocalDate f) {
         Huesped h = new Huesped();
-        h.setNombre(nombre);
-        h.setApellido(apellido);
-        h.setDni(dni);
-        h.setTelefono(tel);
-        h.setEmail(email);
+        h.setNombre(n); h.setApellido(a); h.setDni(d); h.setTelefono(t); h.setEmail(e); h.setFechaNacimiento(f);
         h.setCategoria(CategoriaHuesped.REGULAR);
-        h.setFechaNacimiento(fechaNac);
-
         if (huespedDAO.insertar(h)) {
-            return "ÉXITO: Huésped guardado correctamente.";
-        } else {
-            return "Error técnico: No se pudo guardar en la base de datos.";
+            avisar("Nuevo huésped registrado: " + n + " " + a);
+            return "Éxito.";
         }
+        return "Error.";
     }
 
     public List<Habitacion> obtenerHabitacionesDisponibles() {
         return habitacionDAO.listarDisponibles();
     }
 
-    public String procesarCheckIn(int dniHuesped) {
-        if (usuarioActual == null) return "Error: Debe iniciar sesión.";
+    public String realizarReserva(int dniHuesped, int numHab, LocalDate checkIn, LocalDate checkOut) {
+        Huesped hue = huespedDAO.buscarPorDni(dniHuesped);
+        if (hue == null) return "Huésped no encontrado.";
 
-        if (!usuarioActual.tienePermiso("CHECK_IN")) {
-            return "Error: Su rol no permite realizar check-ins.";
+        Habitacion hab = habitacionDAO.buscarPorNumero(numHab);
+        if (hab == null) return "Habitación no encontrada.";
+
+        Reserva r = new Reserva();
+        r.setHuesped(hue);
+        r.setHabitacion(hab);
+        r.setFechaCheckin(checkIn.atStartOfDay());
+        r.setFechaCheckout(checkOut.atStartOfDay());
+        r.setEstado(EstadoReserva.PENDIENTE);
+        r.setCostoTotal(5000.0); // todo: Esto es un valor de prueba. Ver manejo de costos dependiendo del tipo de habitacion
+
+        if (reservaDAO.insertar(r)) {
+            avisar("Reserva creada para el DNI " + dniHuesped + " en hab. " + numHab);
+            return "Reserva Exitosa.";
         }
-
-        Reserva reserva = reservaDAO.buscarReservaPendientePorDni(dniHuesped);
-
-        if (reserva == null) {
-            return "Error: No existe una reserva PENDIENTE para el DNI: " + dniHuesped;
-        }
-
-        reserva.getHabitacion().ocupar();
-
-        habitacionDAO.actualizarEstado(reserva.getHabitacion().getIdHabitacion(), "OCUPADO");
-
-        Estadia nuevaEstadia = new Estadia();
-        nuevaEstadia.setIdReserva(reserva.getIdReserva());
-        nuevaEstadia.setFechaIngresoReal(LocalDateTime.now());
-
-        if (estadiaDAO.insertar(nuevaEstadia)) {
-            return "Check-in exitoso. Habitación " + reserva.getHabitacion().getNumero() + " ocupada.";
-        } else {
-            return "Error en registro de estadía.";
-        }
+        return "Error al reservar.";
     }
 
-    public boolean tienePermiso(String accion) {
-        return usuarioActual != null && usuarioActual.tienePermiso(accion);
+    public String procesarCheckIn(int dni) {
+        Reserva r = reservaDAO.buscarReservaPendientePorDni(dni);
+        if (r == null) return "No hay reserva pendiente.";
+
+        habitacionDAO.actualizarEstado(r.getHabitacion().getIdHabitacion(), "OCUPADO");
+        Estadia e = new Estadia();
+        e.setIdReserva(r.getIdReserva());
+        e.setFechaIngresoReal(java.time.LocalDateTime.now());
+
+        if (estadiaDAO.insertar(e)) {
+            avisar("CHECK-IN REALIZADO: El huésped con DNI " + dni + " ha ingresado.");
+            return "Check-in completado.";
+        }
+        return "Error.";
     }
 }

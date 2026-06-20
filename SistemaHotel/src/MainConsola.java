@@ -1,4 +1,5 @@
 import controlador.ControladorSistema;
+import controlador.NotificadorSistema;
 import baseDatos.ConexionDB;
 import modelo.Habitacion;
 import java.util.Scanner;
@@ -15,6 +16,9 @@ public class MainConsola {
         conexionDB.crearBaseYTablas();
 
         ControladorSistema sistema = ControladorSistema.getInstancia();
+
+        sistema.registrarObserver(new NotificadorSistema());
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("--- SISTEMA HOTELERO (MODO CONSOLA) ---");
 
@@ -31,7 +35,9 @@ public class MainConsola {
                 System.out.println("\n--- MENÚ PRINCIPAL ---");
                 System.out.println("1. Registrar nuevo Huésped");
                 System.out.println("2. Ver habitaciones disponibles");
-                System.out.println("3. Salir");
+                System.out.println("3. Crear Reserva");
+                System.out.println("4. Check-in");
+                System.out.println("5. Salir");
                 System.out.print("Seleccione opción: ");
 
                 try {
@@ -50,7 +56,6 @@ public class MainConsola {
                         System.out.print("Email: ");
                         String mail = scanner.nextLine();
 
-                        // --- Pedir Fecha de Nacimiento ---
                         System.out.println("Fecha de Nacimiento:");
                         System.out.print("Año (ej: 1990): ");
                         int anio = Integer.parseInt(scanner.nextLine());
@@ -65,26 +70,54 @@ public class MainConsola {
                         System.out.println("\n>>> " + resultado);
 
                     } else if (opcion == 2) {
-                        // todo: ver habitaciones disponibles.
+                        System.out.println("\n-- HABITACIONES DISPONIBLES --");
+                        List<Habitacion> disponibles = sistema.obtenerHabitacionesDisponibles();
+                        if (disponibles.isEmpty()) {
+                            System.out.println("No hay habitaciones disponibles.");
+                        } else {
+                            for (Habitacion h : disponibles) {
+                                System.out.println("Habitación N°: " + h.getNumero() + " | Piso: " + h.getPiso());
+                            }
+                        }
 
                     } else if (opcion == 3) {
+                        System.out.println("\n-- NUEVA RESERVA --");
+                        System.out.print("DNI del Huésped: ");
+                        int dni = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Número de Habitación: ");
+                        int numHab = Integer.parseInt(scanner.nextLine());
+
+                        LocalDate checkIn = LocalDate.now();
+                        System.out.println("Fecha de Entrada: " + checkIn + " (Hoy)");
+                        System.out.println("Fecha de Salida:"); // todo: Ver manejo de fechas invalidas. Por ejemplo, que el checkout sea antes del checkin.
+                        System.out.print("Año (ej: 2024): ");
+                        int anioNacimiento = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Mes (1-12): ");
+                        int mesNacimiento = Integer.parseInt(scanner.nextLine());
+                        System.out.print("Día (1-31): ");
+                        int diaNacimiento = Integer.parseInt(scanner.nextLine());
+
+                        LocalDate checkOut = LocalDate.of(anioNacimiento, mesNacimiento, diaNacimiento);
+
+                        String res = sistema.realizarReserva(dni, numHab, checkIn, checkOut);
+                        System.out.println("\n>>> " + res);
+
+                    } else if (opcion == 4) {
                         System.out.println("\n-- PROCESO DE CHECK-IN --");
                         System.out.print("Ingrese DNI del huésped: ");
                         int dni = Integer.parseInt(scanner.nextLine());
                         String resultado = sistema.procesarCheckIn(dni);
                         System.out.println("\n>>> " + resultado);
 
-                    } else if (opcion == 4) {
+                    } else if (opcion == 5) {
                         salir = true;
-                    }
-
-                    else {
+                    } else {
                         System.out.println("Opción no válida.");
                     }
                 } catch (NumberFormatException e) {
-                    System.out.println("Error: Ingrese un número válido para la opción, DNI o fecha.");
+                    System.out.println("Error: Ingrese un número válido.");
                 } catch (DateTimeException e) {
-                    System.out.println("Error: La fecha ingresada es inválida (verifique mes y día).");
+                    System.out.println("Error: La fecha de salida ingresada es inválida.");
                 } catch (Exception e) {
                     System.out.println("Error inesperado: " + e.getMessage());
                 }
@@ -95,5 +128,4 @@ public class MainConsola {
         scanner.close();
         System.out.println("Programa finalizado.");
     }
-
 }
