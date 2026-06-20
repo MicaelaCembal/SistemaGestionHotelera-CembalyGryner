@@ -59,7 +59,6 @@ public class MainConsola {
                         System.out.print("Día (1-31): ");
                         int dia = Integer.parseInt(scanner.nextLine());
 
-                        // Validación de fecha inválida (ej. 31 de febrero)
                         LocalDate fechaNac = LocalDate.of(anio, mes, dia);
 
                         String resultado = sistema.registrarHuesped(nom, ape, dni, tel, mail, fechaNac);
@@ -69,8 +68,17 @@ public class MainConsola {
                         // todo: ver habitaciones disponibles.
 
                     } else if (opcion == 3) {
+                        System.out.println("\n-- PROCESO DE CHECK-IN --");
+                        System.out.print("Ingrese DNI del huésped: ");
+                        int dni = Integer.parseInt(scanner.nextLine());
+                        String resultado = sistema.procesarCheckIn(dni);
+                        System.out.println("\n>>> " + resultado);
+
+                    } else if (opcion == 4) {
                         salir = true;
-                    } else {
+                    }
+
+                    else {
                         System.out.println("Opción no válida.");
                     }
                 } catch (NumberFormatException e) {
@@ -87,4 +95,5 @@ public class MainConsola {
         scanner.close();
         System.out.println("Programa finalizado.");
     }
+
 }
