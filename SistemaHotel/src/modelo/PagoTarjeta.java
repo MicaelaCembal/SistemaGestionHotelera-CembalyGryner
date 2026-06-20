@@ -1,15 +1,14 @@
 package modelo;
 
 public class PagoTarjeta implements IMedioPago {
+
     @Override
     public boolean procesarPago(double monto) {
-        // Implementación
-        return true;
+        return monto > 0;
     }
 
     @Override
     public boolean validar() {
-        // Implementación
         return true;
     }
 }
