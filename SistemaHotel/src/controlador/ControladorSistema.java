@@ -91,4 +91,27 @@ public class ControladorSistema {
         }
         return "Error.";
     }
+
+    public String procesarCheckOut(int dni) {
+
+        Reserva r = reservaDAO.buscarReservaPendientePorDni(dni);
+
+        if (r == null) {
+            return "No existe una estadía activa.";
+        }
+
+        habitacionDAO.actualizarEstado(
+                r.getHabitacion().getIdHabitacion(),
+                "LIMPIEZA"
+        );
+
+        reservaDAO.actualizarEstado(
+                r.getIdReserva(),
+                "CONFIRMADA"
+        );
+
+        avisar("CHECK-OUT REALIZADO: huésped DNI " + dni);
+
+        return "Check-out completado.";
+    }
 }

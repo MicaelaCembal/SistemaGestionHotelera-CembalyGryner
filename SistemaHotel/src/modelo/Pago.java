@@ -2,71 +2,84 @@ package modelo;
 
 import java.time.LocalDateTime;
 
-public class Pago {
-    private int idPago;
-    private int idReserva;
-    private IMedioPago medioPago;
-    private double monto;
-    private LocalDateTime fechaPago;
-    private EstadoPago estado;
+    public class Pago {
 
-    public void registrarPago() {
-        // Implementación
-    }
+        private int idPago;
+        private int idReserva;
+        private IMedioPago medioPago;
+        private double monto;
+        private LocalDateTime fechaPago;
+        private EstadoPago estado;
 
-    public void reembolsar() {
-        // Implementación
-    }
+        public void registrarPago() {
 
-    public EstadoPago verEstado() {
-        return this.estado;
-    }
+            if(medioPago != null &&
+                    medioPago.validar() &&
+                    medioPago.procesarPago(monto)) {
 
-    public int getIdPago() {
-        return idPago;
-    }
+                estado = EstadoPago.PAGADO;
+                fechaPago = LocalDateTime.now();
+            }
+            else{
+                estado = EstadoPago.PENDIENTE;
+            }
+        }
 
-    public void setIdPago(int id) {
-        this.idPago = id;
-    }
+        public void reembolsar() {
+            estado = EstadoPago.REEMBOLSADO;
+        }
 
-    public int getIdReserva() {
-        return idReserva;
-    }
+        public EstadoPago verEstado() {
+            return estado;
+        }
 
-    public void setIdReserva(int id) {
-        this.idReserva = id;
-    }
+        public int getIdPago() {
+            return idPago;
+        }
 
-    public IMedioPago getMedioPago() {
-        return medioPago;
-    }
+        public void setIdPago(int idPago) {
+            this.idPago = idPago;
+        }
 
-    public void setMedioPago(IMedioPago m) {
-        this.medioPago = m;
-    }
+        public int getIdReserva() {
+            return idReserva;
+        }
 
-    public double getMonto() {
-        return monto;
-    }
+        public void setIdReserva(int idReserva) {
+            this.idReserva = idReserva;
+        }
 
-    public void setMonto(double monto) {
-        this.monto = monto;
-    }
+        public IMedioPago getMedioPago() {
+            return medioPago;
+        }
 
-    public LocalDateTime getFechaPago() {
-        return fechaPago;
-    }
+        public void setMedioPago(IMedioPago medioPago) {
+            this.medioPago = medioPago;
+        }
 
-    public void setFechaPago(LocalDateTime f) {
-        this.fechaPago = f;
-    }
+        public double getMonto() {
+            return monto;
+        }
 
-    public EstadoPago getEstado() {
-        return estado;
-    }
+        public void setMonto(double monto) {
+            this.monto = monto;
+        }
 
-    public void setEstado(EstadoPago e) {
-        this.estado = e;
-    }
+        public LocalDateTime getFechaPago() {
+            return fechaPago;
+        }
+
+        public void setFechaPago(LocalDateTime fechaPago) {
+            this.fechaPago = fechaPago;
+        }
+
+        public EstadoPago getEstado() {
+            return estado;
+        }
+
+        public void setEstado(EstadoPago estado) {
+            this.estado = estado;
+        }
+    
+
 }
