@@ -115,4 +115,45 @@ public class ReservaDAO {
             e.printStackTrace();
         }
     }
+
+    public Reserva buscarReservaPorDni(int dni) {
+
+        String sql = """
+        SELECT r.*, h.numero, h.piso, hu.nombre, hu.apellido
+        FROM reserva r
+        JOIN huesped hu ON r.idHuesped = hu.idHuesped
+        JOIN habitacion h ON r.idHabitacion = h.idHabitacion
+        WHERE hu.dni = ?
+        ORDER BY r.idReserva DESC
+        LIMIT 1
+    """;
+
+        try (Connection conn = conexionDB.conectar();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setInt(1, dni);
+
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+
+                Reserva r = new Reserva();
+                r.setIdReserva(rs.getInt("idReserva"));
+
+                Habitacion h = new Habitacion();
+                h.setIdHabitacion(rs.getInt("idHabitacion"));
+                h.setNumero(rs.getInt("numero"));
+                h.setPiso(rs.getInt("piso"));
+
+                r.setHabitacion(h);
+
+                return r;
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
 }
