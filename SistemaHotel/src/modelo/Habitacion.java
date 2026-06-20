@@ -15,10 +15,6 @@ public class Habitacion {
         this.estado = new EstadoDisponible();
     }
 
-    public boolean estaDisponible(LocalDateTime fechaIngreso, LocalDateTime fechaSalida) {
-        return estado instanceof EstadoDisponible;
-    }
-
     public void cambiarEstado(EstadoHabitacion estado) {
         this.estado = estado;
     }

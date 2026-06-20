@@ -22,10 +22,6 @@ public class TipoHabitacion {
         this.idTipoHabitacion = idTipoHabitacion;
     }
 
-    public double verPrecioBase(){
-        return precioBaseNoche;
-    }
-
     public String getNombre() {
         return nombre;
     }

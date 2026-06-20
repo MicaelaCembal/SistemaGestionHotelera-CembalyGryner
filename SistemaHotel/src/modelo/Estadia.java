@@ -16,35 +16,6 @@ public class Estadia {
         this.serviciosEstadia = new ArrayList<>();
     }
 
-    public Estadia(int idEstadia, Reserva reserva, LocalDateTime fechaIngresoReal, LocalDateTime fechaEgresoReal, int cantidadInt, double subtotalServicios) {
-
-        this.idEstadia = idEstadia;
-        this.reserva = reserva;
-        this.fechaIngresoReal = fechaIngresoReal;
-        this.fechaEgresoReal = fechaEgresoReal;
-        this.serviciosEstadia = new ArrayList<>();
-
-        if (reserva != null) {
-            this.idReserva = reserva.getIdReserva();
-        }
-    }
-
-
-
-    public void iniciarEstadia() {
-        this.fechaIngresoReal = LocalDateTime.now();
-        if (reserva != null && reserva.getHabitacion() != null) {
-            reserva.getHabitacion().ocupar();
-        }
-    }
-
-    public void finalizarEstadia() {
-        this.fechaEgresoReal = LocalDateTime.now();
-        if (reserva != null && reserva.getHabitacion() != null) {
-            reserva.getHabitacion().iniciarLimpieza();
-        }
-    }
-
     public void agregarServicio(IServicio servicio, int cantidad) {
         ServicioEstadia se = new ServicioEstadia(0, this.idEstadia, servicio, cantidad, LocalDateTime.now());
         serviciosEstadia.add(se);

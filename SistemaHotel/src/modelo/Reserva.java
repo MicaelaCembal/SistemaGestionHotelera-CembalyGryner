@@ -22,7 +22,6 @@ public class Reserva {
         if (noches <= 0) noches = 1; // Estancia mínima cobranza
 
         double precioNoche = habitacion.getTipoHabitacion().getPrecioBaseNoche();
-        if (precioNoche <= 0) precioNoche = 5000; // Valor por defecto de prueba
 
         double base = noches * precioNoche;
 
