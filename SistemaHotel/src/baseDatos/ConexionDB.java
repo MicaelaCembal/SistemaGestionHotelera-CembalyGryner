@@ -126,7 +126,7 @@ public class ConexionDB {
                     fechaCheckin    DATETIME NOT NULL,
                     fechaCheckout   DATETIME NOT NULL,
                     costoTotal      DOUBLE DEFAULT 0,
-                    estado          ENUM('PENDIENTE', 'PAGADO', 'REEMBOLSADO') NOT NULL DEFAULT 'PENDIENTE',
+                    estado          ENUM('PENDIENTE', 'CONFIRMADA', 'CANCELADA') NOT NULL DEFAULT 'PENDIENTE',
                     FOREIGN KEY (idHuesped)    REFERENCES huesped(idHuesped),
                     FOREIGN KEY (idHabitacion) REFERENCES habitacion(idHabitacion),
                     FOREIGN KEY (idPromocion)  REFERENCES promocion(idPromocion)

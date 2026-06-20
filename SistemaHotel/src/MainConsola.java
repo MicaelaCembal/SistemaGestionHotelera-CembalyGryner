@@ -6,6 +6,13 @@ import java.util.Scanner;
 import java.time.LocalDate;
 import java.time.DateTimeException;
 import java.util.List;
+import modelo.Pago;
+import modelo.PagoTarjeta;
+import modelo.PagoEfectivo;
+import modelo.PagoTransferencia;
+import modelo.PaqueteServicios;
+import modelo.ServicioActividad;
+import modelo.ServicioConsumo;
 
 // Este Main es para testeo rápido por consola.
 
@@ -37,7 +44,10 @@ public class MainConsola {
                 System.out.println("2. Ver habitaciones disponibles");
                 System.out.println("3. Crear Reserva");
                 System.out.println("4. Check-in");
-                System.out.println("5. Salir");
+                System.out.println("5. Check-out");
+                System.out.println("6. Registrar Pago");
+                System.out.println("7. Probar Servicios");
+                System.out.println("8. Salir");
                 System.out.print("Seleccione opción: ");
 
                 try {
@@ -109,10 +119,68 @@ public class MainConsola {
                         String resultado = sistema.procesarCheckIn(dni);
                         System.out.println("\n>>> " + resultado);
 
+
                     } else if (opcion == 5) {
+
+                        System.out.println("\n-- PROCESO DE CHECK-OUT --");
+                        System.out.print("Ingrese DNI del huésped: ");
+
+                        int dni = Integer.parseInt(scanner.nextLine());
+
+                        String resultado = sistema.procesarCheckOut(dni);
+
+                        System.out.println("\n>>> " + resultado);
+
+                    }else if (opcion == 6) {
+
+                        System.out.println("\n-- REGISTRAR PAGO --");
+
+                        Pago pago = new Pago();
+
+                        System.out.print("Monto: ");
+                        double monto = Double.parseDouble(scanner.nextLine());
+
+                        pago.setMonto(monto);
+
+                        System.out.println("Seleccione medio de pago:");
+                        System.out.println("1. Tarjeta");
+                        System.out.println("2. Efectivo");
+                        System.out.println("3. Transferencia");
+
+                        int medio = Integer.parseInt(scanner.nextLine());
+
+                        if (medio == 1) {
+                            pago.setMedioPago(new PagoTarjeta());
+                        } else if (medio == 2) {
+                            pago.setMedioPago(new PagoEfectivo());
+                        } else {
+                            pago.setMedioPago(new PagoTransferencia());
+                        }
+
+                        pago.registrarPago();
+
+                        System.out.println("Estado del pago: " + pago.getEstado());
+
+                    }else if (opcion == 7) {
+
+                        System.out.println("\n-- PRUEBA DE SERVICIOS --");
+
+                        PaqueteServicios paquete = new PaqueteServicios("Pack Premium");
+
+                        paquete.agregarServicio(
+                                new ServicioConsumo(1, "Minibar", 1500));
+
+                        paquete.agregarServicio(
+                                new ServicioActividad(2, "Spa", 3000));
+
+                        System.out.println("Paquete: " + paquete.getNombre());
+                        System.out.println("Precio total: $" + paquete.calcularPrecio());
+
+                    }
+                    else if (opcion == 8) {
                         salir = true;
                     } else {
-                        System.out.println("Opción no válida.");
+                        System.out.println("Opción no válida. Intente nuevamente.");
                     }
                 } catch (NumberFormatException e) {
                     System.out.println("Error: Ingrese un número válido.");
