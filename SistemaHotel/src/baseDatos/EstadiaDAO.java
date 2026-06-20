@@ -1,16 +1,13 @@
 package baseDatos;
 
 import modelo.Estadia;
-import modelo.ServicioEstadia;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 public class EstadiaDAO {
     private ConexionDB conexionDB = new ConexionDB();
 
     public boolean insertar(Estadia estadia, double precioBase) {
-        String sql = "INSERT INTO estadia (idReserva, fechaIngresoReal, precioBaseHabitacion) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO estadia (idReserva, fechaIngresoReal, precioBaseHabitacion, subtotalServicios, totalFacturado) VALUES (?, ?, ?, 0, 0)";
         try (Connection conn = conexionDB.conectar();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, estadia.getIdReserva());
@@ -26,7 +23,7 @@ public class EstadiaDAO {
     }
 
     public Estadia buscarActivaPorReserva(int idReserva) {
-        String sql = "SELECT * FROM estadia WHERE idReserva = ? AND fechaEgresoReal IS NULL";
+        String sql = "SELECT * FROM estadia WHERE idReserva = ? AND fechaEgresoReal IS NULL ORDER BY idEstadia DESC LIMIT 1";
         try (Connection conn = conexionDB.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idReserva);

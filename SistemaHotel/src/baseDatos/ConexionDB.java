@@ -120,7 +120,7 @@ public class ConexionDB {
                     fechaCheckin    DATETIME NOT NULL,
                     fechaCheckout   DATETIME NOT NULL,
                     costoTotal      DOUBLE DEFAULT 0,
-                    estado          ENUM('PENDIENTE', 'CONFIRMADA', 'CANCELADA') NOT NULL DEFAULT 'PENDIENTE',
+                    estado          ENUM('PENDIENTE', 'CONFIRMADA', 'CANCELADA', 'FINALIZADA') NOT NULL DEFAULT 'PENDIENTE',
                     FOREIGN KEY (idHuesped)    REFERENCES huesped(idHuesped),
                     FOREIGN KEY (idHabitacion) REFERENCES habitacion(idHabitacion),
                     FOREIGN KEY (idPromocion)  REFERENCES promocion(idPromocion)
@@ -172,8 +172,6 @@ public class ConexionDB {
                 )
             """);
 
-            // --- DATOS POR DEFECTO ---
-
             ResultSet rsUser = stmt.executeQuery("SELECT COUNT(*) FROM usuario");
             if (rsUser.next() && rsUser.getInt(1) == 0) {
                 stmt.executeUpdate("INSERT INTO usuario (username, password, rol) VALUES ('admin', '1234', 'ADMIN'), ('recep', '4321', 'RECEPCIONISTA')");
@@ -202,7 +200,6 @@ public class ConexionDB {
                         "(1, 301, 3, 3, 'DISPONIBLE')");
             }
 
-            // CARGA INICIAL DE SERVICIOS
             ResultSet rsServ = stmt.executeQuery("SELECT COUNT(*) FROM servicio");
             if (rsServ.next() && rsServ.getInt(1) == 0) {
                 stmt.executeUpdate("INSERT INTO servicio (nombre, tipo, precio) VALUES " +

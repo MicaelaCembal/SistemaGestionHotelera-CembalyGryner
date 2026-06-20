@@ -13,14 +13,12 @@ public class ReservaDAO {
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setInt(1, reserva.getHuesped().getIdHuesped());
             ps.setInt(2, reserva.getHabitacion().getIdHabitacion());
-            if (reserva.getPromocion() != null) ps.setInt(3, reserva.getPromocion().getIdPromocion());
-            else ps.setNull(3, Types.INTEGER);
+            ps.setNull(3, Types.INTEGER);
             ps.setTimestamp(4, Timestamp.valueOf(reserva.getFechaCheckin()));
             ps.setTimestamp(5, Timestamp.valueOf(reserva.getFechaCheckout()));
             ps.setDouble(6, reserva.getCostoTotal());
             ps.setString(7, reserva.getEstado().toString());
-            int filas = ps.executeUpdate();
-            if (filas > 0) {
+            if (ps.executeUpdate() > 0) {
                 ResultSet rs = ps.getGeneratedKeys();
                 if (rs.next()) reserva.setIdReserva(rs.getInt(1));
                 return true;
@@ -40,7 +38,7 @@ public class ReservaDAO {
     }
 
     public boolean existeSolapamiento(int idHabitacion, LocalDateTime inicio, LocalDateTime fin) {
-        String sql = "SELECT COUNT(*) FROM reserva WHERE idHabitacion = ? AND estado != 'CANCELADA' " +
+        String sql = "SELECT COUNT(*) FROM reserva WHERE idHabitacion = ? AND estado NOT IN ('CANCELADA', 'FINALIZADA') " +
                 "AND (fechaCheckin < ? AND fechaCheckout > ?)";
         try (Connection conn = conexionDB.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -66,24 +64,18 @@ public class ReservaDAO {
             if (rs.next()) {
                 Reserva r = new Reserva();
                 r.setIdReserva(rs.getInt("idReserva"));
-                r.setFechaCheckin(rs.getTimestamp("fechaCheckin").toLocalDateTime());
-                r.setFechaCheckout(rs.getTimestamp("fechaCheckout").toLocalDateTime());
-
+                r.setCostoTotal(rs.getDouble("costoTotal"));
                 Habitacion hab = new Habitacion();
                 hab.setIdHabitacion(rs.getInt("idHabitacion"));
                 hab.setNumero(rs.getInt("numero"));
-
-                TipoHabitacion tipo = new TipoHabitacion();
-                tipo.setPrecioBaseNoche(rs.getDouble("precioBajoNoche"));
-                hab.setTipoHabitacion(tipo);
-
+                TipoHabitacion th = new TipoHabitacion();
+                th.setPrecioBaseNoche(rs.getDouble("precioBajoNoche"));
+                hab.setTipoHabitacion(th);
                 String est = rs.getString("estadoHab");
                 if(est.equals("DISPONIBLE")) hab.setEstado(new EstadoDisponible());
                 else if(est.equals("OCUPADO")) hab.setEstado(new EstadoOcupado());
-                else if(est.equals("LIMPIEZA")) hab.setEstado(new EstadoLimpieza());
-
+                else hab.setEstado(new EstadoLimpieza());
                 r.setHabitacion(hab);
-                r.setCostoTotal(rs.getDouble("costoTotal"));
                 return r;
             }
         } catch (SQLException e) { e.printStackTrace(); }
