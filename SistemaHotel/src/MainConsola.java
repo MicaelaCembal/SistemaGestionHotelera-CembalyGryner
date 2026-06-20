@@ -36,7 +36,8 @@ public class MainConsola {
                 System.out.println("5. Check-out (Facturación)");
                 System.out.println("6. Registrar Pago (Strategy)");
                 System.out.println("7. Cargar Servicio a Estancia (Composite)");
-                System.out.println("8. Salir");
+                System.out.println("8. Confirmar Habitación Lista (Post-Limpieza)");
+                System.out.println("9. Salir");
                 System.out.print("Seleccione opción: ");
 
                 try {
@@ -96,7 +97,6 @@ public class MainConsola {
                     } else if (opcion == 7) {
                         System.out.print("Ingrese DNI del huésped alojado: ");
                         int dniS = Integer.parseInt(scanner.nextLine());
-
                         List<IServicio> menu = sistema.obtenerMenuServicios();
                         System.out.println("\n-- MENÚ DE SERVICIOS DISPONIBLES --");
                         for (IServicio s : menu) {
@@ -105,15 +105,18 @@ public class MainConsola {
                             if (s instanceof ServicioActividad) idMostrable = ((ServicioActividad)s).getIdServicio();
                             System.out.println(idMostrable + ". " + s.getNombre() + " [$" + s.calcularPrecio() + "]");
                         }
-
                         System.out.print("Seleccione ID del servicio: ");
                         int idServ = Integer.parseInt(scanner.nextLine());
                         System.out.print("Cantidad: ");
                         int cant = Integer.parseInt(scanner.nextLine());
-
                         System.out.println(">>> " + sistema.asignarServicioAEstadia(dniS, idServ, cant));
 
                     } else if (opcion == 8) {
+                        System.out.print("Ingrese el número de la habitación a habilitar: ");
+                        int numH = Integer.parseInt(scanner.nextLine());
+                        System.out.println(">>> " + sistema.finalizarLimpieza(numH));
+
+                    } else if (opcion == 9) {
                         salir = true;
                     }
                 } catch (Exception e) {

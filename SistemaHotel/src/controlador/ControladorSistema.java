@@ -127,5 +127,18 @@ public class ControladorSistema {
         return "Error.";
     }
 
+    public String finalizarLimpieza(int numHab) {
+        Habitacion hab = habitacionDAO.buscarPorNumero(numHab);
+        if (hab == null) return "Habitación no encontrada.";
+
+        if (!(hab.getEstado() instanceof EstadoLimpieza)) {
+            return "La habitación no requiere limpieza (Estado actual: " + hab.getEstado().getClass().getSimpleName().replace("Estado", "") + ")";
+        }
+
+        habitacionDAO.actualizarEstado(hab.getIdHabitacion(), "DISPONIBLE");
+        avisar("LIMPIEZA: La habitación " + numHab + " ya está lista y DISPONIBLE.");
+        return "Limpieza confirmada. Habitación lista para uso.";
+    }
+
     public Usuario getUsuarioActual() { return usuarioActual; }
 }
