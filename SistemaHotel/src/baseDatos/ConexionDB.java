@@ -133,6 +133,7 @@ public class ConexionDB {
                     idReserva           INT NOT NULL,
                     fechaIngresoReal    DATETIME,
                     fechaEgresoReal     DATETIME,
+                    precioBaseHabitacion DOUBLE DEFAULT 0,
                     subtotalServicios   DOUBLE DEFAULT 0,
                     totalFacturado      DOUBLE DEFAULT 0,
                     FOREIGN KEY (idReserva) REFERENCES reserva(idReserva)
@@ -171,6 +172,8 @@ public class ConexionDB {
                 )
             """);
 
+            // --- DATOS POR DEFECTO ---
+
             ResultSet rsUser = stmt.executeQuery("SELECT COUNT(*) FROM usuario");
             if (rsUser.next() && rsUser.getInt(1) == 0) {
                 stmt.executeUpdate("INSERT INTO usuario (username, password, rol) VALUES ('admin', '1234', 'ADMIN'), ('recep', '4321', 'RECEPCIONISTA')");
@@ -197,6 +200,17 @@ public class ConexionDB {
                         "(1, 201, 2, 2, 'DISPONIBLE'), " +
                         "(1, 202, 2, 2, 'DISPONIBLE'), " +
                         "(1, 301, 3, 3, 'DISPONIBLE')");
+            }
+
+            // CARGA INICIAL DE SERVICIOS
+            ResultSet rsServ = stmt.executeQuery("SELECT COUNT(*) FROM servicio");
+            if (rsServ.next() && rsServ.getInt(1) == 0) {
+                stmt.executeUpdate("INSERT INTO servicio (nombre, tipo, precio) VALUES " +
+                        "('Minibar: Coca Cola', 'CONSUMO', 1200), " +
+                        "('Minibar: Agua Mineral', 'CONSUMO', 800), " +
+                        "('Spa y Masajes', 'ACTIVIDAD', 5500), " +
+                        "('Gimnasio Pase Diario', 'ACTIVIDAD', 2000), " +
+                        "('Desayuno Buffet Extra', 'CONSUMO', 3500)");
             }
 
         } catch (ClassNotFoundException | SQLException e) {
