@@ -68,6 +68,7 @@ public class ControladorSistema {
         }
         Huesped hue = huespedDAO.buscarPorDni(dniHuesped);
         if (hue == null) return "Huésped no encontrado.";
+
         Habitacion hab = habitacionDAO.buscarPorNumero(numHab);
         if (hab == null) return "Habitación no encontrada.";
 
@@ -85,10 +86,11 @@ public class ControladorSistema {
         r.setFechaCheckin(inicio);
         r.setFechaCheckout(fin);
         r.setEstado(EstadoReserva.PENDIENTE);
+
         r.calcularCostoTotal();
 
         if (reservaDAO.insertar(r)) {
-            avisar("RESERVA CONFIRMADA: Hab " + numHab + " para " + hue.getApellido());
+            avisar("RESERVA CONFIRMADA: Hab " + numHab + " Costo Base: $" + r.getCostoTotal());
             return "Reserva Exitosa.";
         }
         return "Error.";
@@ -99,8 +101,8 @@ public class ControladorSistema {
         if (r == null) return "No hay reserva PENDIENTE.";
 
         if (!(r.getHabitacion().getEstado() instanceof EstadoDisponible)) {
-            avisar("BLOQUEO: Hab " + r.getHabitacion().getNumero() + " en estado " + r.getHabitacion().getEstado().getClass().getSimpleName());
-            return "Error: Habitación no disponible.";
+            avisar("BLOQUEO: La habitación " + r.getHabitacion().getNumero() + " no está disponible.");
+            return "Error: Habitación no lista.";
         }
 
         habitacionDAO.actualizarEstado(r.getHabitacion().getIdHabitacion(), "OCUPADO");
@@ -110,7 +112,7 @@ public class ControladorSistema {
         e.setIdReserva(r.getIdReserva());
         e.setFechaIngresoReal(LocalDateTime.now());
         if (estadiaDAO.insertar(e)) {
-            avisar("CHECK-IN: DNI " + dni + " ingresó.");
+            avisar("CHECK-IN: DNI " + dni + " ingresó a Hab " + r.getHabitacion().getNumero());
             return "Check-in completado.";
         }
         return "Error.";
@@ -120,10 +122,16 @@ public class ControladorSistema {
         Reserva r = reservaDAO.buscarReservaConfirmadaPorDni(dni);
         if (r == null) return "No hay estadía activa para este DNI.";
 
-        habitacionDAO.actualizarEstado(r.getHabitacion().getIdHabitacion(), "LIMPIEZA");
-        reservaDAO.actualizarEstado(r.getIdReserva(), "CANCELADA");
+        double totalFinal = r.getCostoTotal();
 
-        avisar("CHECK-OUT: DNI " + dni + " salió. Habitación enviada a limpieza.");
-        return "Check-out completado.";
+        if (estadiaDAO.finalizarEstadia(r.getIdReserva(), 0.0, totalFinal)) {
+            habitacionDAO.actualizarEstado(r.getHabitacion().getIdHabitacion(), "LIMPIEZA");
+            reservaDAO.actualizarEstado(r.getIdReserva(), "CANCELADA");
+
+            avisar("CHECK-OUT: DNI " + dni + " finalizó. Total Pagado: $" + totalFinal);
+            return "Check-out exitoso. Total: $" + totalFinal;
+        }
+
+        return "Error al procesar salida.";
     }
 }

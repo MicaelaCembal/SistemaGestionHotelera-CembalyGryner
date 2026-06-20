@@ -54,8 +54,10 @@ public class ReservaDAO {
     }
 
     public Reserva buscarReservaPendientePorDni(int dni) {
-        String sql = "SELECT r.*, h.numero, h.estado as estadoHab FROM reserva r " +
-                "JOIN huesped hu ON r.idHuesped = hu.idHuesped JOIN habitacion h ON r.idHabitacion = h.idHabitacion " +
+        String sql = "SELECT r.*, h.numero, h.estado as estadoHab, t.precioBajoNoche FROM reserva r " +
+                "JOIN huesped hu ON r.idHuesped = hu.idHuesped " +
+                "JOIN habitacion h ON r.idHabitacion = h.idHabitacion " +
+                "JOIN tipo_habitacion t ON h.idTipoHabitacion = t.idTipoHabitacion " +
                 "WHERE hu.dni = ? AND r.estado = 'PENDIENTE' ORDER BY r.fechaCheckin ASC LIMIT 1";
         try (Connection conn = conexionDB.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -64,14 +66,24 @@ public class ReservaDAO {
             if (rs.next()) {
                 Reserva r = new Reserva();
                 r.setIdReserva(rs.getInt("idReserva"));
+                r.setFechaCheckin(rs.getTimestamp("fechaCheckin").toLocalDateTime());
+                r.setFechaCheckout(rs.getTimestamp("fechaCheckout").toLocalDateTime());
+
                 Habitacion hab = new Habitacion();
                 hab.setIdHabitacion(rs.getInt("idHabitacion"));
                 hab.setNumero(rs.getInt("numero"));
+
+                TipoHabitacion tipo = new TipoHabitacion();
+                tipo.setPrecioBaseNoche(rs.getDouble("precioBajoNoche"));
+                hab.setTipoHabitacion(tipo);
+
                 String est = rs.getString("estadoHab");
                 if(est.equals("DISPONIBLE")) hab.setEstado(new EstadoDisponible());
                 else if(est.equals("OCUPADO")) hab.setEstado(new EstadoOcupado());
                 else if(est.equals("LIMPIEZA")) hab.setEstado(new EstadoLimpieza());
+
                 r.setHabitacion(hab);
+                r.setCostoTotal(rs.getDouble("costoTotal"));
                 return r;
             }
         } catch (SQLException e) { e.printStackTrace(); }
@@ -80,7 +92,8 @@ public class ReservaDAO {
 
     public Reserva buscarReservaConfirmadaPorDni(int dni) {
         String sql = "SELECT r.*, h.idHabitacion, h.numero FROM reserva r " +
-                "JOIN huesped hu ON r.idHuesped = hu.idHuesped JOIN habitacion h ON r.idHabitacion = h.idHabitacion " +
+                "JOIN huesped hu ON r.idHuesped = hu.idHuesped " +
+                "JOIN habitacion h ON r.idHabitacion = h.idHabitacion " +
                 "WHERE hu.dni = ? AND r.estado = 'CONFIRMADA' ORDER BY r.idReserva DESC LIMIT 1";
         try (Connection conn = conexionDB.conectar();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -89,6 +102,7 @@ public class ReservaDAO {
             if (rs.next()) {
                 Reserva r = new Reserva();
                 r.setIdReserva(rs.getInt("idReserva"));
+                r.setCostoTotal(rs.getDouble("costoTotal"));
                 Habitacion h = new Habitacion();
                 h.setIdHabitacion(rs.getInt("idHabitacion"));
                 h.setNumero(rs.getInt("numero"));
