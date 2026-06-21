@@ -21,8 +21,8 @@ public class VentanaHuesped {
     private JTextField textFieldTelefono;
     private JTextField textFieldEmail;
     private JTextField textFieldAnio;
-    private JTextField textFieldMes;
     private JTextField textFieldDia;
+    private JTextField textFieldMes;
     private JLabel lblResultado;
 
     public VentanaHuesped() {
@@ -65,11 +65,12 @@ public class VentanaHuesped {
         textFieldTelefono.setText("");
         textFieldEmail.setText("");
         textFieldAnio.setText("");
-        textFieldMes.setText("");
         textFieldDia.setText("");
+        textFieldMes.setText("");
     }
 
     public JPanel getPanelHuesped() {
         return panelHuesped;
     }
+
 }

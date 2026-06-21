@@ -39,6 +39,7 @@ public class MainConsola {
                 System.out.println("8. Confirmar Habitación Lista (Post-Limpieza)");
                 System.out.println("9. Salir");
                 System.out.print("Seleccione opción: ");
+                System.out.println("\n----------------------");
 
                 try {
                     int opcion = Integer.parseInt(scanner.nextLine());
